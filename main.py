@@ -1,4 +1,4 @@
-import os
+seimport os
 import requests
 import feedparser
 
@@ -33,18 +33,15 @@ link_atual = noticia.link
 
 try:
     with open("ultima_noticia.txt", "r") as f:
-        ultimo_link = f.read().strip()
+        ultima = f.read().strip()
 except:
-    ultimo_link = ""
+    ultima = ""
 
-if link_atual == ultimo_link:
-    print("Notícia repetida")
+if titulo == ultima:
     exit()
 
 with open("ultima_noticia.txt", "w") as f:
-    f.write(link_atual)
-    titulo = noticia.title
-    resumo = getattr(noticia, "summary", "")
+    f.write(titulo)
 
     texto = (titulo + " " + resumo).lower()
 
