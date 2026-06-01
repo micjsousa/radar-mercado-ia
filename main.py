@@ -1,6 +1,7 @@
-seimport os
+import os
 import requests
 import feedparser
+from deep_translator import GoogleTranslator
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
@@ -24,10 +25,26 @@ for feed in feeds:
     if not rss.entries:
         continue
 
-    noticia = rss.entries[0]
-if rss.entries:
+
 
     noticia = rss.entries[0]
+    titulo = noticia.title
+resumo = getattr(noticia, "summary", "")
+try:
+    titulo_pt = GoogleTranslator(
+        source='auto',
+        target='pt'
+    ).translate(titulo)
+except:
+    titulo_pt = titulo
+
+try:
+    resumo_pt = GoogleTranslator(
+        source='auto',
+        target='pt'
+    ).translate(resumo[:400])
+except:
+    resumo_pt = resumo[:400]
     
 link_atual = noticia.link
 
