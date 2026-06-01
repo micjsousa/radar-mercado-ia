@@ -9,15 +9,6 @@ rss = feedparser.parse(
     "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EBVSP,BRL%3DX&region=US&lang=en-US"
 )
 
-PALAVRAS_IMPORTANTES = [
-    "fed", "powell", "cpi", "inflation", "payroll",
-    "pce", "interest rate", "treasury", "bond",
-    "oil", "opec", "iran", "israel", "china",
-    "trump", "tariff", "war", "recession",
-    "brazil", "ibovespa", "real", "dollar",
-    "fiscal", "tax", "central bank"
-]
-
 if rss.entries:
 
     noticia = rss.entries[0]
@@ -25,48 +16,129 @@ if rss.entries:
     titulo = noticia.title
     resumo = getattr(noticia, "summary", "")
 
-    texto_completo = (titulo + " " + resumo).lower()
+    texto = (titulo + " " + resumo).lower()
 
-    relevante = any(
-        palavra in texto_completo
-        for palavra in PALAVRAS_IMPORTANTES
-    )
+    categoria = "Mercado"
+    urgencia = "🟢 BAIXA"
+    win = "🟡 NEUTRO"
+    wdo = "🟡 NEUTRO"
+    autoridade = "Não identificada"
 
-    if relevante:
+    # AUTORIDADES
 
-        impacto_win = "⚪ Em análise"
-        impacto_wdo = "⚪ Em análise"
+    if "trump" in texto:
+        autoridade = "🇺🇸 Donald Trump"
 
-        if any(x in texto_completo for x in ["fed", "powell", "cpi", "payroll", "pce"]):
-            impacto_wdo = "🔴 ALTO IMPACTO"
+    elif "powell" in texto:
+        autoridade = "🇺🇸 Jerome Powell"
 
-        if any(x in texto_completo for x in ["war", "iran", "israel", "oil", "opec"]):
-            impacto_win = "🟠 MÉDIO/ALTO IMPACTO"
-            impacto_wdo = "🟠 MÉDIO/ALTO IMPACTO"
+    elif "lula" in texto:
+        autoridade = "🇧🇷 Lula"
 
-        mensagem = f"""
+    elif "haddad" in texto:
+        autoridade = "🇧🇷 Fernando Haddad"
+
+    elif "galipolo" in texto:
+        autoridade = "🇧🇷 Gabriel Galípolo"
+
+    elif "xi" in texto:
+        autoridade = "🇨🇳 Xi Jinping"
+
+    elif "putin" in texto:
+        autoridade = "🇷🇺 Vladimir Putin"
+
+    # GEOPOLÍTICA
+
+    geopolitica = [
+        "war",
+        "iran",
+        "israel",
+        "ukraine",
+        "russia",
+        "china",
+        "tariff",
+        "sanction",
+        "conflict"
+    ]
+
+    if any(p in texto for p in geopolitica):
+
+        categoria = "🌎 GEOPOLÍTICA"
+        urgencia = "🔴 ALTA"
+
+        win = "🔴 BAIXISTA"
+        wdo = "🟢 ALTISTA"
+
+    # JUROS
+
+    juros = [
+        "fed",
+        "interest rate",
+        "powell",
+        "inflation",
+        "central bank",
+        "copom",
+        "selic"
+    ]
+
+    if any(p in texto for p in juros):
+
+        categoria = "🏦 JUROS"
+
+        win = "🟠 MÉDIO IMPACTO"
+        wdo = "🟠 MÉDIO IMPACTO"
+
+    # COMMODITIES
+
+    commodities = [
+        "oil",
+        "coffee",
+        "soybean",
+        "corn",
+        "gold"
+    ]
+
+    if any(p in texto for p in commodities):
+
+        categoria = "🛢 COMMODITIES"
+
+        win = "🟠 MÉDIO/ALTO IMPACTO"
+        wdo = "🟠 MÉDIO/ALTO IMPACTO"
+
+    mensagem = f"""
 📢 RADAR MERCADO IA
 
-📰 {titulo}
+🏷 Categoria:
+{categoria}
+
+👤 Autoridade:
+{autoridade}
+
+📰 Título:
+{titulo}
 
 📄 Resumo:
 {resumo[:400]}
 
 📊 WIN:
-{impacto_win}
+{win}
 
 💵 WDO:
-{impacto_wdo}
+{wdo}
 
-🔗 {noticia.link}
+🔥 Urgência:
+{urgencia}
+
+🔗 Link:
+{noticia.link}
 
 🤖 Radar automático
 """
 
-        requests.post(
-            f"https://api.telegram.org/bot{TOKEN}/sendMessage",
-            data={
-                "chat_id": CHAT_ID,
-                "text": mensagem
-            }
-        )
+    requests.post(
+        f"https://api.telegram.org/bot{TOKEN}/sendMessage",
+        data={
+            "chat_id": CHAT_ID,
+            "text": mensagem
+        }
+    )
