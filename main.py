@@ -5,10 +5,26 @@ import feedparser
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
 
-rss = feedparser.parse(
-    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EBVSP,BRL%3DX&region=US&lang=en-US"
-)
+feeds = [
+    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EBVSP,BRL%3DX&region=US&lang=en-US",
 
+    "https://feeds.reuters.com/reuters/businessNews",
+
+    "https://feeds.reuters.com/reuters/worldNews",
+
+    "https://feeds.reuters.com/news/wealth",
+
+    "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+]
+
+for feed in feeds:
+
+    rss = feedparser.parse(feed)
+
+    if not rss.entries:
+        continue
+
+    noticia = rss.entries[0]
 if rss.entries:
 
     noticia = rss.entries[0]
