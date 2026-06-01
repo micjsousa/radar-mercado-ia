@@ -12,15 +12,22 @@ rss = feedparser.parse(
 if rss.entries:
     noticia = rss.entries[0]
 
+    resumo = getattr(noticia, "summary", "Resumo não disponível")
+
     mensagem = f"""
-📢 Radar Mercado IA
+📢 RADAR MERCADO IA
 
-📰 {noticia.title}
+📰 Título:
+{noticia.title}
 
-🔗 {noticia.link}
+📄 Resumo:
+{resumo[:300]}
 
-⚠️ Classificação inicial:
-Impacto em análise
+🎯 Impacto:
+Em análise
+
+🔗 Link:
+{noticia.link}
 
 🤖 Enviado automaticamente
 """
