@@ -12,7 +12,21 @@ rss = feedparser.parse(
 if rss.entries:
 
     noticia = rss.entries[0]
+    
+link_atual = noticia.link
 
+try:
+    with open("ultima_noticia.txt", "r") as f:
+        ultimo_link = f.read().strip()
+except:
+    ultimo_link = ""
+
+if link_atual == ultimo_link:
+    print("Notícia repetida")
+    exit()
+
+with open("ultima_noticia.txt", "w") as f:
+    f.write(link_atual)
     titulo = noticia.title
     resumo = getattr(noticia, "summary", "")
 
